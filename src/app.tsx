@@ -6,7 +6,9 @@ export function App() {
 
   const handleSubmit = (event: any) => {
     event.preventDefault();
-    const newColorCode = event.target?.elements?.colorInput.value;
+
+    const form = event.target as HTMLFormElement & { elements: { colorInput: HTMLInputElement } };
+    const newColorCode = form.elements.colorInput.value;
     console.log(newColorCode);
     setColorCode(newColorCode);
   };
