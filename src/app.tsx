@@ -74,11 +74,15 @@ function ColorInputForm({ onSubmit }: ColorInputFormProps) {
 
   const handleSubmit = (event: h.JSX.TargetedEvent<HTMLFormElement, Event>) => {
     event.preventDefault();
+    
     const form = event.currentTarget as HTMLFormElement & {
       elements: { colorInput: HTMLInputElement };
     };
     const guess = form.elements.colorInput.value;
+
     onSubmit(guess);
+
+    form.elements.colorInput.value = '';
   };
 
   return (
