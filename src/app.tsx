@@ -6,9 +6,10 @@ import { Ticker, Tick } from 'react-flip-ticker';
 import './app.css';
 
 const maxHealth = 0xffffff;
-const damageMultiplier = 16;
 
-function calculateColorDifference(color1: string, color2: string): number {
+const defaultInput = '808080';
+
+function calculateColorDifference(color1: string, color2: string) {
   // Convert hex color code to RGB
   const hexToRgb = (hex: string) => {
     const r = parseInt(hex.slice(0, 2), 16);
@@ -21,22 +22,27 @@ function calculateColorDifference(color1: string, color2: string): number {
   const rgb2 = hexToRgb(color2);
 
   // Calculate the difference between each channel
-  const diffR = Math.abs(rgb1.r - rgb2.r);
-  const diffG = Math.abs(rgb1.g - rgb2.g);
-  const diffB = Math.abs(rgb1.b - rgb2.b);
+  const diffR = rgb1.r - rgb2.r;
+  const diffG = rgb1.g - rgb2.g;
+  const diffB = rgb1.b - rgb2.b;
 
-  const totalDiff = diffR + diffG + diffB;
-  const squareDiff = ~~Math.sqrt(diffR ** 2 + diffG ** 2 + diffB ** 2);
-  const mulDiff = diffR * diffG * diffB;
+  return [diffR, diffG, diffB] as const;
+}
+
+function calculateDamage(diffR: number, diffG: number, diffB: number) {
+  const sumDiff = Math.abs(diffR) + Math.abs(diffG) + Math.abs(diffB);
+  const mulDiff = Math.abs(diffR * diffG * diffB);
+  const sqrDiff = ~~Math.sqrt(diffR ** 2 + diffG ** 2 + diffB ** 2);
 
   console.log(`
     RGB diff: ${diffR}, ${diffG}, ${diffB}
-    Total diff: ${totalDiff.toString(16).toUpperCase()}
-    Square diff: ${squareDiff.toString(16).toUpperCase()}
+    Total diff: ${sumDiff.toString(16).toUpperCase()}
+    Square diff: ${sqrDiff.toString(16).toUpperCase()}
     Mul diff: ${mulDiff.toString(16).toUpperCase()}
     `);
 
-  return mulDiff;
+  return sumDiff * (0xffff / 3);
+  // return mulDiff * 16;
 }
 
 // Custom hook for game logic
@@ -56,8 +62,8 @@ function useGame() {
     (guess: string) => {
       if (isGameOver) return;
 
-      const colorDifference = calculateColorDifference(guess, colorCode);
-      const damage = colorDifference * damageMultiplier;
+      const diffs = calculateColorDifference(guess, colorCode);
+      const damage = calculateDamage(...diffs);
       const newHealth = health - damage;
       setHealth(newHealth);
 
@@ -67,7 +73,7 @@ function useGame() {
         setScore(score + 1);
       }
 
-      console.log({ guess, colorCode, colorDifference, damage, newHealth, isGameOver })
+      console.log({ guess, colorCode, diffs, damage: damage.toString(16), newHealth, isGameOver });
 
       setColorCode(getRandomColor());
     },
@@ -107,7 +113,7 @@ export const ColorInputForm: FunctionComponent<ColorInputFormProps> = ({ onSubmi
 
     onSubmit(guess);
 
-    form.elements.colorInput.value = '7f7f7f';
+    form.elements.colorInput.value = defaultInput;
   };
 
   return (
@@ -119,7 +125,7 @@ export const ColorInputForm: FunctionComponent<ColorInputFormProps> = ({ onSubmi
         class='color-input'
         placeholder='Guess the color'
         onInput={handleInputChange}
-        defaultValue='7f7f7f'
+        defaultValue={defaultInput}
       />
       <button type='submit' class='submit-button'>
         Submit
@@ -160,7 +166,7 @@ export const Game: FunctionComponent<GameProps> = ({ onGameOver }) => {
       <div class='color-square' style={{ backgroundColor: `#${colorCode}` }}></div>
       <ColorInputForm onSubmit={handleGuess} />
       {/* <h2>♥{health.toString(16).toUpperCase()}</h2> */}
-      <hr/>
+      <hr />
     </>
   );
 };
