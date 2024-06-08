@@ -1,5 +1,6 @@
-import { useState, useCallback } from 'preact/hooks';
-import { h } from 'preact';
+import { FunctionComponent, h } from 'preact';
+import { useCallback, useState } from 'preact/hooks';
+
 import './app.css';
 
 function calculateColorDifference(color1: string, color2: string): number {
@@ -81,7 +82,7 @@ interface ColorInputFormProps {
 }
 
 // Component for the color input form
-function ColorInputForm({ onSubmit }: ColorInputFormProps) {
+export const ColorInputForm: FunctionComponent<ColorInputFormProps> = ({ onSubmit }) => {
   const handleInputChange = (event: h.JSX.TargetedEvent<HTMLInputElement, Event>) => {
     let value = event.currentTarget.value.toUpperCase();
     value = value.slice(0, 6);
@@ -105,6 +106,7 @@ function ColorInputForm({ onSubmit }: ColorInputFormProps) {
 
   return (
     <form onSubmit={handleSubmit} class='input-zone'>
+      <div class='hashtag'>#</div>
       <input
         type='text'
         name='colorInput'
@@ -120,27 +122,56 @@ function ColorInputForm({ onSubmit }: ColorInputFormProps) {
   );
 }
 
-export function App() {
-  const { colorCode, health, score, isGameOver, handleGuess, resetGame } = useGame();
+interface GameOverProps {
+  resetGame: () => void;
+}
 
-  console.log('Rendering App. Color code:', colorCode);
+export const GameOver: FunctionComponent<GameOverProps> = ({ resetGame }) => {
+  return (
+    <div>
+      <h1>Game Over</h1>
+      <button onClick={resetGame}>New Game</button>
+    </div>
+  );
+};
+
+interface GameProps {
+  onGameOver: () => void;
+}
+
+export const Game: FunctionComponent<GameProps> = ({ onGameOver }) => {
+  const { colorCode, health, score, isGameOver, handleGuess } = useGame();
+
+  if (isGameOver) {
+    onGameOver();
+    return null;
+  }
+
   const scoreText = '★' + score.toString(16).toUpperCase();
+  return (
+    <>
+      <h1>{score > 0 ? scoreText : '•'}</h1>
+      <div class='color-square' style={{ backgroundColor: `#${colorCode}` }}></div>
+      <ColorInputForm onSubmit={handleGuess} />
+      <h2>♥{health.toString(16).toUpperCase()}</h2>
+    </>
+  );
+};
+
+export const App: FunctionComponent = () => {
+  const [gameOver, setGameOver] = useState(false);
+
+  const handleGameOver = () => {
+    setGameOver(true);
+  };
+
+  const resetGame = () => {
+    setGameOver(false);
+  };
 
   return (
     <div class='game-container'>
-      {isGameOver ? (
-        <div>
-          <h1>Game Over</h1>
-          <button onClick={resetGame}>New Game</button>
-        </div>
-      ) : (
-        <>
-          <h1>{score > 0 ? scoreText : '•'}</h1>
-          <div class='color-square' style={{ backgroundColor: `#${colorCode}` }}></div>
-          <ColorInputForm onSubmit={handleGuess} />
-          <h2>♥{health.toString(16).toUpperCase()}</h2>
-        </>
-      )}
+      {gameOver ? <GameOver resetGame={resetGame} /> : <Game onGameOver={handleGameOver} />}
     </div>
   );
-}
+};

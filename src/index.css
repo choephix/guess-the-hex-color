@@ -94,15 +94,26 @@ button:focus-visible {
   justify-content: center;
   margin-top: 20px;
   
+  background-color: #101010;
   border-radius: 20px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
 }
 
+.hashtag {
+  display: inline-block;
+  padding: 10px 0 10px 20px;
+  height: 100%;
+  opacity: 0.65;
+  font-size: 1.5em;
+}
+
 .color-input {
+  background: none;
   border: none;
-  padding: 10px;
+  padding: 10px 20px 10px 1px;
   border-radius: 20px 0 0 20px;
   width: 200px;
+  font-size: 1.5em;
 }
 
 .submit-button {
