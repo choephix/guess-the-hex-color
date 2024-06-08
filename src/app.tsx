@@ -47,6 +47,8 @@ function calculateDamage(diffR: number, diffG: number, diffB: number) {
 
 // Custom hook for game logic
 function useGame() {
+  const [guessHistory, setGuessHistory] = useState<GuessHistoryEntry[]>([]);
+
   const [colorCode, setColorCode] = useState<string>(getRandomColor());
   const [score, setScore] = useState<number>(0);
   const [health, setHealth] = useState<number>(maxHealth);
@@ -66,6 +68,17 @@ function useGame() {
       const damage = calculateDamage(...diffs);
       const newHealth = health - damage;
       setHealth(newHealth);
+
+      // Add this block
+      setGuessHistory(prevHistory => [
+        ...prevHistory,
+        {
+          colorToGuess: colorCode,
+          userGuess: guess,
+          rgbDifference: { r: diffs[0], g: diffs[1], b: diffs[2] },
+          damage,
+        },
+      ]);
 
       if (newHealth <= 0) {
         setIsGameOver(true);
@@ -87,7 +100,7 @@ function useGame() {
     setIsGameOver(false);
   }, []);
 
-  return { colorCode, score, health, isGameOver, handleGuess, resetGame };
+  return { colorCode, score, health, guessHistory, isGameOver, handleGuess, resetGame };
 }
 
 interface ColorInputFormProps {
@@ -152,7 +165,7 @@ interface GameProps {
 }
 
 export const Game: FunctionComponent<GameProps> = ({ onGameOver }) => {
-  const { colorCode, health, score, isGameOver, handleGuess } = useGame();
+  const { colorCode, health, score, guessHistory, isGameOver, handleGuess } = useGame();
 
   if (isGameOver) {
     onGameOver();
@@ -166,6 +179,7 @@ export const Game: FunctionComponent<GameProps> = ({ onGameOver }) => {
       <div class='color-square' style={{ backgroundColor: `#${colorCode}` }}></div>
       <ColorInputForm onSubmit={handleGuess} />
       <hr />
+      <GuessHistory history={guessHistory} />
     </>
   );
 };
@@ -206,6 +220,34 @@ const HPTicker: FunctionComponent<{ value: number }> = ({ value }) => {
           ))}
         </Ticker>
       </div>
+    </div>
+  );
+};
+
+interface GuessHistoryEntry {
+  colorToGuess: string;
+  userGuess: string;
+  rgbDifference: { r: number; g: number; b: number };
+  damage: number;
+}
+
+// Create a new component to display the guess history
+const GuessHistory: FunctionComponent<{ history: GuessHistoryEntry[] }> = ({ history }) => {
+  return (
+    <div>
+      <h2>Guess History</h2>
+      <ul>
+        {history.map((entry, index) => (
+          <li key={index}>
+            <p>Color to guess: {entry.colorToGuess}</p>
+            <p>User's guess: {entry.userGuess}</p>
+            <p>
+              RGB difference: R{entry.rgbDifference.r} G{entry.rgbDifference.g} B{entry.rgbDifference.b}
+            </p>
+            <p>Damage: {entry.damage}</p>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
