@@ -22,12 +22,15 @@ function calculateColorDifference(color1: string, color2: string): number {
   const totalDiff = diffR + diffG + diffB;
   const squareDiff = ~~Math.sqrt(diffR ** 2 + diffG ** 2 + diffB ** 2);
 
-  console.log(
-    `Color difference: ${diffR}, ${diffG}, ${diffB} | Total: ${totalDiff} | Final: ${squareDiff}`
-  );
+  const damage = totalDiff * 0xffff;
 
-  // Return the sum of the differences
-  return totalDiff * 0xffff;
+  console.log([diffR, diffG, diffB], {
+    totalDiff,
+    squareDiff,
+    damage: damage.toString(16).toUpperCase(),
+  });
+
+  return damage;
 }
 
 // Custom hook for game logic
@@ -94,6 +97,7 @@ function ColorInputForm({ onSubmit }: ColorInputFormProps) {
         class='color-input'
         placeholder='Guess the color'
         onInput={handleInputChange}
+        defaultValue='7f7f7f'
       />
       <button type='submit' class='submit-button'>
         Submit
@@ -113,12 +117,7 @@ export function App() {
   return (
     <div class='game-container'>
       <h1>{score > 0 ? scoreText : '•'}</h1>
-      <div
-        class='color-square'
-        style={{ backgroundColor: `#${colorCode}` }}
-        title={`Color code: #${colorCode}`}
-        default={true}
-      ></div>
+      <div class='color-square' style={{ backgroundColor: `#${colorCode}` }}></div>
       <ColorInputForm onSubmit={handleGuess} />
       <h2>♥{health.toString(16).toUpperCase()}</h2>
     </div>
