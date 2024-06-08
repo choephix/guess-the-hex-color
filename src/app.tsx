@@ -73,7 +73,7 @@ function useGame() {
       setGuessHistory(prevHistory => [
         ...prevHistory,
         {
-          colorToGuess: colorCode,
+          colorToGuess: '' + colorCode,
           userGuess: guess,
           rgbDifference: { r: diffs[0], g: diffs[1], b: diffs[2] },
           damage,
@@ -174,10 +174,12 @@ export const Game: FunctionComponent<GameProps> = ({ onGameOver }) => {
 
   return (
     <>
-      <h1 className={score > 0 ? '' : 'hidden'}>{'★' + score}</h1>
-      <HPTicker value={health} />
-      <div class='color-square' style={{ backgroundColor: `#${colorCode}` }}></div>
-      <ColorInputForm onSubmit={handleGuess} />
+      <div class='game'>
+        <h1 className={score > 0 ? '' : 'hidden'}>{'★' + score}</h1>
+        <HPTicker value={health} />
+        <div class='color-square' style={{ backgroundColor: `#${colorCode}` }}></div>
+        <ColorInputForm onSubmit={handleGuess} />
+      </div>
       <hr />
       <GuessHistory history={guessHistory} />
     </>
@@ -198,6 +200,7 @@ export const App: FunctionComponent = () => {
   return (
     <div class='game-container'>
       {gameOver ? <GameOver resetGame={resetGame} /> : <Game onGameOver={handleGameOver} />}
+      <div style="height: 20dvh"></div>
     </div>
   );
 };
@@ -234,20 +237,47 @@ interface GuessHistoryEntry {
 // Create a new component to display the guess history
 const GuessHistory: FunctionComponent<{ history: GuessHistoryEntry[] }> = ({ history }) => {
   return (
-    <div>
+    <div style={{ marginTop: '20px' }}>
       <h2>Guess History</h2>
-      <ul>
-        {history.map((entry, index) => (
-          <li key={index}>
-            <p>Color to guess: {entry.colorToGuess}</p>
-            <p>User's guess: {entry.userGuess}</p>
-            <p>
-              RGB difference: R{entry.rgbDifference.r} G{entry.rgbDifference.g} B{entry.rgbDifference.b}
+      {history.map((entry, index) => (
+        <div
+          key={index}
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: '10px',
+            border: '1px solid #000',
+            padding: '10px',
+          }}
+        >
+          <div style={{ display: 'flex' }}>
+            <div
+              style={{
+                width: '60px',
+                height: '20px',
+                backgroundColor: '#' + entry.colorToGuess,
+              }}
+            ></div>
+            <div
+              style={{
+                width: '60px',
+                height: '20px',
+                backgroundColor: '#' + entry.userGuess,
+              }}
+            ></div>
+            <h3 style={{ margin: '0' }}>
+              R{entry.rgbDifference.r} G{entry.rgbDifference.g} B{entry.rgbDifference.b}
+            </h3>
+            <p style={{ margin: '0' }}>
+              {entry.colorToGuess} | {entry.userGuess}
             </p>
-            <p>Damage: {entry.damage}</p>
-          </li>
-        ))}
-      </ul>
+            <p style={{ margin: '0' }}>Damage</p>
+            <p style={{ margin: '0' }}>{entry.damage}</p>
+          </div>
+        </div>
+      ))}
     </div>
   );
 };

@@ -24,10 +24,9 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
-  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: auto;
 }
 
 h1 {
@@ -65,100 +64,4 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
-}
-
-/* Path: src/index.js */
-
-.game-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-}
-
-.color-square {
-  width: 50vmin;
-  height: 50vmin;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  border-radius: 5%;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-}
-
-.input-zone {
-  display: flex;
-  justify-content: center;
-  margin-top: 2em;
-
-  background-color: #101010;
-  border-radius: 20px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-}
-
-.hashtag {
-  display: inline-block;
-  padding: 10px 0 10px 20px;
-  height: 100%;
-  opacity: 0.65;
-  font-size: 1.5em;
-}
-
-.color-input {
-  background: none;
-  border: none;
-  padding: 10px 20px 10px 1px;
-  border-radius: 20px 0 0 20px;
-  width: 200px;
-  font-size: 1.5em;
-}
-.color-input:focus {
-  outline: none;
-}
-
-.submit-button {
-  border: none;
-  padding: 10px;
-  border-radius: 0 20px 20px 0;
-  background-color: #4caf50;
-  color: white;
-  cursor: pointer;
-}
-
-.hp-ticker {
-  align-items: center;
-  justify-content: center;
-  display: flex;
-  height: 100%;
-  /* font-family: monospace; */
-}
-
-.hp-container {
-  /* Container properties */
-  width: 100%;
-  height: 32px;
-  background-color: #3a0808;
-  border-radius: 10px;
-  overflow: hidden;
-  margin-bottom: 20px;
-  position: relative;
-}
-
-.hp-bar {
-  position: absolute;
-  height: 100%;
-  background-color: rgb(15, 150, 75);
-  transition: width 0.3s ease-in-out;
-}
-
-hr {
-  width: 100%;
-  margin: 2em 0;
-  opacity: 0.1;
-}
-
-.hidden {
-  visibility: hidden;
 }
