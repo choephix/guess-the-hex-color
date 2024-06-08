@@ -71,13 +71,13 @@ function useGame() {
 
       // Add this block
       setGuessHistory(prevHistory => [
-        ...prevHistory,
         {
           colorToGuess: '' + colorCode,
           userGuess: guess,
           rgbDifference: { r: diffs[0], g: diffs[1], b: diffs[2] },
           damage,
         },
+        ...prevHistory,
       ]);
 
       if (newHealth <= 0) {
@@ -249,10 +249,29 @@ const GuessHistory: FunctionComponent<{ history: GuessHistoryEntry[] }> = ({ his
           </h3>
           <p className='detail'>
             {entry.colorToGuess} | {entry.userGuess}
+          </p>{' '}
+          <p className='detail'>
+            <DamageDisplay value={entry.damage} />
           </p>
-          <p className='detail'>Damage {entry.damage}</p>
         </div>
       ))}
     </div>
+  );
+};
+
+
+interface DamageDisplayProps {
+  value: number;
+}
+
+const DamageDisplay: FunctionComponent<DamageDisplayProps> = ({ value }) => {
+  const redPart = value.toString(16).toUpperCase();
+  const bluePart = '0'.repeat(6 - redPart.length);
+
+  return (
+    <span>
+      <span style={{ color: 'red' }}>{redPart}</span>
+      <span style={{ color: 'green' }}>{bluePart}</span>
+    </span>
   );
 };
