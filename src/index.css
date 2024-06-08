@@ -67,7 +67,6 @@ button:focus-visible {
   }
 }
 
-
 /* Path: src/index.js */
 
 .game-container {
@@ -93,7 +92,7 @@ button:focus-visible {
   display: flex;
   justify-content: center;
   margin-top: 20px;
-  
+
   background-color: #101010;
   border-radius: 20px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
@@ -115,12 +114,43 @@ button:focus-visible {
   width: 200px;
   font-size: 1.5em;
 }
+.color-input:focus {
+  outline: none;
+}
 
 .submit-button {
   border: none;
   padding: 10px;
   border-radius: 0 20px 20px 0;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   cursor: pointer;
+}
+
+.hp-ticker {
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  /* font-family: monospace; */
+}
+
+.hp-container {
+  /* Container properties */
+  width: 100%;
+  background-color: #3a0808;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.hp-bar {
+  position: absolute;
+  height: 100%;
+  background-color: rgb(15, 150, 75);
+  transition: width 0.3s ease-in-out;
+}
+
+.hidden {
+  visibility: hidden;
 }

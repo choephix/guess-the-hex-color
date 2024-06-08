@@ -1,7 +1,12 @@
 import { FunctionComponent, h } from 'preact';
 import { useCallback, useState } from 'preact/hooks';
 
+import { Ticker, Tick } from 'react-flip-ticker';
+
 import './app.css';
+
+const maxHealth = 0xffffff;
+const damageMultiplier = 16;
 
 function calculateColorDifference(color1: string, color2: string): number {
   // Convert hex color code to RGB
@@ -22,23 +27,23 @@ function calculateColorDifference(color1: string, color2: string): number {
 
   const totalDiff = diffR + diffG + diffB;
   const squareDiff = ~~Math.sqrt(diffR ** 2 + diffG ** 2 + diffB ** 2);
+  const mulDiff = diffR * diffG * diffB;
 
-  const damage = totalDiff * 0xffff;
+  console.log(`
+    RGB diff: ${diffR}, ${diffG}, ${diffB}
+    Total diff: ${totalDiff.toString(16).toUpperCase()}
+    Square diff: ${squareDiff.toString(16).toUpperCase()}
+    Mul diff: ${mulDiff.toString(16).toUpperCase()}
+    `);
 
-  console.log([diffR, diffG, diffB], {
-    totalDiff,
-    squareDiff,
-    damage: damage.toString(16).toUpperCase(),
-  });
-
-  return damage;
+  return mulDiff;
 }
 
 // Custom hook for game logic
 function useGame() {
   const [colorCode, setColorCode] = useState<string>(getRandomColor());
   const [score, setScore] = useState<number>(0);
-  const [health, setHealth] = useState<number>(0xffffff);
+  const [health, setHealth] = useState<number>(maxHealth);
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
 
   function getRandomColor(): string {
@@ -51,20 +56,22 @@ function useGame() {
     (guess: string) => {
       if (isGameOver) return;
 
-      if (guess === colorCode) {
-        setScore(score + 1);
+      const colorDifference = calculateColorDifference(guess, colorCode);
+      const damage = colorDifference * damageMultiplier;
+      const newHealth = health - damage;
+      setHealth(newHealth);
+
+      if (newHealth <= 0) {
+        setIsGameOver(true);
       } else {
-        const colorDifference = calculateColorDifference(guess, colorCode);
-        const newHealth = health - colorDifference;
-        setHealth(newHealth);
-        if (newHealth <= 0) {
-          setIsGameOver(true);
-        }
+        setScore(score + 1);
       }
-      console.log(`Score: ${score}`);
+
+      console.log({ guess, colorCode, colorDifference, damage, newHealth, isGameOver })
+
       setColorCode(getRandomColor());
     },
-    [colorCode, score, health, isGameOver]
+    [colorCode, score, health || 0, isGameOver]
   );
 
   const resetGame = useCallback(() => {
@@ -97,7 +104,6 @@ export const ColorInputForm: FunctionComponent<ColorInputFormProps> = ({ onSubmi
       elements: { colorInput: HTMLInputElement };
     };
     const guess = form.elements.colorInput.value.padStart(6, '0');
-    console.log('Input:', guess);
 
     onSubmit(guess);
 
@@ -120,7 +126,7 @@ export const ColorInputForm: FunctionComponent<ColorInputFormProps> = ({ onSubmi
       </button>
     </form>
   );
-}
+};
 
 interface GameOverProps {
   resetGame: () => void;
@@ -147,13 +153,13 @@ export const Game: FunctionComponent<GameProps> = ({ onGameOver }) => {
     return null;
   }
 
-  const scoreText = '★' + score.toString(16).toUpperCase();
   return (
     <>
-      <h1>{score > 0 ? scoreText : '•'}</h1>
+      <h1 className={score > 0 ? '' : 'hidden'}>{'★' + score}</h1>
+      <HPTicker value={health} />
       <div class='color-square' style={{ backgroundColor: `#${colorCode}` }}></div>
       <ColorInputForm onSubmit={handleGuess} />
-      <h2>♥{health.toString(16).toUpperCase()}</h2>
+      {/* <h2>♥{health.toString(16).toUpperCase()}</h2> */}
     </>
   );
 };
@@ -172,6 +178,28 @@ export const App: FunctionComponent = () => {
   return (
     <div class='game-container'>
       {gameOver ? <GameOver resetGame={resetGame} /> : <Game onGameOver={handleGameOver} />}
+    </div>
+  );
+};
+
+const HPTicker: FunctionComponent<{ value: number }> = ({ value }) => {
+  const HEX_DIGITS = '0123456789ABCDEFNa-/'.split('');
+  const valueHex = isNaN(value) ? 'NaN' : value.toString(16).toUpperCase().padStart(6, '0');
+  const hpPercentage = isNaN(value) ? 0 : (100 * value) / maxHealth; // Ensure value is a number
+
+  return (
+    <div class='hp-container'>
+      <div class='hp-bar' style={{ width: `${hpPercentage}%` }}></div>
+      <div class='hp-ticker'>
+        <Ticker textClassName='text'>
+          ♥
+          {valueHex.split('').map((char, index) => (
+            <Tick key={'d' + index} rotateItems={HEX_DIGITS}>
+              {char}
+            </Tick>
+          ))}
+        </Ticker>
+      </div>
     </div>
   );
 };
