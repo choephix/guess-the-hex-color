@@ -111,3 +111,31 @@ hr {
 .hidden {
   visibility: hidden;
 }
+
+
+/* GuessHistory.css */
+.guess-history {
+  margin-top: 20px;
+}
+
+.guess-entry {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  background: #0006;
+  border: 1px solid #000;
+  border-radius: 1em;
+  padding: 10px 20px;
+}
+
+.color-box {
+  display: inline-block;
+  width: 60px;
+  height: 1em;
+}
+
+.detail {
+  margin: 0 10px;
+}

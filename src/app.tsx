@@ -200,7 +200,7 @@ export const App: FunctionComponent = () => {
   return (
     <div class='game-container'>
       {gameOver ? <GameOver resetGame={resetGame} /> : <Game onGameOver={handleGameOver} />}
-      <div style="height: 20dvh"></div>
+      <div style='height: 20dvh'></div>
     </div>
   );
 };
@@ -234,48 +234,23 @@ interface GuessHistoryEntry {
   damage: number;
 }
 
-// Create a new component to display the guess history
 const GuessHistory: FunctionComponent<{ history: GuessHistoryEntry[] }> = ({ history }) => {
   return (
-    <div style={{ marginTop: '20px' }}>
+    <div className='guess-history'>
       <h2>Guess History</h2>
       {history.map((entry, index) => (
-        <div
-          key={index}
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: '10px',
-            border: '1px solid #000',
-            padding: '10px',
-          }}
-        >
-          <div style={{ display: 'flex' }}>
-            <div
-              style={{
-                width: '60px',
-                height: '20px',
-                backgroundColor: '#' + entry.colorToGuess,
-              }}
-            ></div>
-            <div
-              style={{
-                width: '60px',
-                height: '20px',
-                backgroundColor: '#' + entry.userGuess,
-              }}
-            ></div>
-            <h3 style={{ margin: '0' }}>
-              R{entry.rgbDifference.r} G{entry.rgbDifference.g} B{entry.rgbDifference.b}
-            </h3>
-            <p style={{ margin: '0' }}>
-              {entry.colorToGuess} | {entry.userGuess}
-            </p>
-            <p style={{ margin: '0' }}>Damage</p>
-            <p style={{ margin: '0' }}>{entry.damage}</p>
+        <div key={index} className='guess-entry'>
+          <div className='colors'>
+            <div className='color-box' style={{ backgroundColor: '#' + entry.colorToGuess }}></div>
+            <div className='color-box' style={{ backgroundColor: '#' + entry.userGuess }}></div>
           </div>
+          <h3 className='detail'>
+            R{entry.rgbDifference.r} G{entry.rgbDifference.g} B{entry.rgbDifference.b}
+          </h3>
+          <p className='detail'>
+            {entry.colorToGuess} | {entry.userGuess}
+          </p>
+          <p className='detail'>Damage {entry.damage}</p>
         </div>
       ))}
     </div>
