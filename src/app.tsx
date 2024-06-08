@@ -165,7 +165,6 @@ export const Game: FunctionComponent<GameProps> = ({ onGameOver }) => {
       <HPTicker value={health} />
       <div class='color-square' style={{ backgroundColor: `#${colorCode}` }}></div>
       <ColorInputForm onSubmit={handleGuess} />
-      {/* <h2>♥{health.toString(16).toUpperCase()}</h2> */}
       <hr />
     </>
   );
