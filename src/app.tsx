@@ -38,6 +38,7 @@ function useGame() {
   const [colorCode, setColorCode] = useState<string>(getRandomColor());
   const [score, setScore] = useState<number>(0);
   const [health, setHealth] = useState<number>(0xffffff);
+  const [isGameOver, setIsGameOver] = useState<boolean>(false);
 
   function getRandomColor(): string {
     return Math.floor(Math.random() * 0xffffff)
@@ -47,19 +48,32 @@ function useGame() {
 
   const handleGuess = useCallback(
     (guess: string) => {
+      if (isGameOver) return;
+
       if (guess === colorCode) {
         setScore(score + 1);
       } else {
         const colorDifference = calculateColorDifference(guess, colorCode);
-        setHealth(health - colorDifference);
+        const newHealth = health - colorDifference;
+        setHealth(newHealth);
+        if (newHealth <= 0) {
+          setIsGameOver(true);
+        }
       }
       console.log(`Score: ${score}`);
       setColorCode(getRandomColor());
     },
-    [colorCode, score, health]
+    [colorCode, score, health, isGameOver]
   );
 
-  return { colorCode, score, health, handleGuess };
+  const resetGame = useCallback(() => {
+    setColorCode(getRandomColor());
+    setScore(0);
+    setHealth(0xffffff);
+    setIsGameOver(false);
+  }, []);
+
+  return { colorCode, score, health, isGameOver, handleGuess, resetGame };
 }
 
 interface ColorInputFormProps {
@@ -106,20 +120,27 @@ function ColorInputForm({ onSubmit }: ColorInputFormProps) {
   );
 }
 
-// Main App component
 export function App() {
-  const { colorCode, health, score, handleGuess } = useGame();
+  const { colorCode, health, score, isGameOver, handleGuess, resetGame } = useGame();
 
   console.log('Rendering App. Color code:', colorCode);
-
   const scoreText = '★' + score.toString(16).toUpperCase();
 
   return (
     <div class='game-container'>
-      <h1>{score > 0 ? scoreText : '•'}</h1>
-      <div class='color-square' style={{ backgroundColor: `#${colorCode}` }}></div>
-      <ColorInputForm onSubmit={handleGuess} />
-      <h2>♥{health.toString(16).toUpperCase()}</h2>
+      {isGameOver ? (
+        <div>
+          <h1>Game Over</h1>
+          <button onClick={resetGame}>New Game</button>
+        </div>
+      ) : (
+        <>
+          <h1>{score > 0 ? scoreText : '•'}</h1>
+          <div class='color-square' style={{ backgroundColor: `#${colorCode}` }}></div>
+          <ColorInputForm onSubmit={handleGuess} />
+          <h2>♥{health.toString(16).toUpperCase()}</h2>
+        </>
+      )}
     </div>
   );
 }
