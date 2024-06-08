@@ -1,7 +1,7 @@
 import { useState } from 'preact/hooks';
 import './app.css';
 
-export function App() {
+function useGameState() {
   const [colorCode, setColorCode] = useState(getRandomColor());
   const [score, setScore] = useState(0);
   const [health, setHealth] = useState(0xFFFFFF);
@@ -10,18 +10,7 @@ export function App() {
     return Math.floor(Math.random()*16777215).toString(16).toUpperCase();
   }
 
-  const handleInputChange = (event: any) => {
-    let value = event.target.value.toUpperCase();
-    value = value.slice(0, 6);
-    value = value.replace(/[^A-Fa-f0-9]/g, '');
-    event.target.value = value;
-  };
-
-  const handleSubmit = (event: any) => {
-    event.preventDefault();
-
-    const form = event.target as HTMLFormElement & { elements: { colorInput: HTMLInputElement } };
-    const guess = form.elements.colorInput.value;
+  const handleGuess = (guess: string) => {
     if (guess === colorCode) {
       setScore(score + 1);
     } else {
@@ -29,6 +18,32 @@ export function App() {
     }
     console.log(`Score: ${score}`);
     setColorCode(getRandomColor());
+  };
+
+  return { colorCode, score, health, handleGuess };
+}
+
+function useInput() {
+  const handleInputChange = (event: any) => {
+    let value = event.target.value.toUpperCase();
+    value = value.slice(0, 6);
+    value = value.replace(/[^A-Fa-f0-9]/g, '');
+    event.target.value = value;
+  };
+
+  return { handleInputChange };
+}
+
+export function App() {
+  const { colorCode, health, handleGuess } = useGameState();
+  const { handleInputChange } = useInput();
+
+  const handleSubmit = (event: any) => {
+    event.preventDefault();
+
+    const form = event.target as HTMLFormElement & { elements: { colorInput: HTMLInputElement } };
+    const guess = form.elements.colorInput.value;
+    handleGuess(guess);
   };
 
   return (
