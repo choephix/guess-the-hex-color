@@ -20,24 +20,24 @@ function calculateColorDifference(color1: string, color2: string): number {
   const diffB = Math.abs(rgb1.b - rgb2.b);
 
   const totalDiff = diffR + diffG + diffB;
-  const finalDiff = ~~Math.sqrt(diffR ** 2 + diffG ** 2 + diffB ** 2);
+  const squareDiff = ~~Math.sqrt(diffR ** 2 + diffG ** 2 + diffB ** 2);
 
   console.log(
-    `Color difference: ${diffR}, ${diffG}, ${diffB} | Total: ${totalDiff} | Final: ${finalDiff}`
+    `Color difference: ${diffR}, ${diffG}, ${diffB} | Total: ${totalDiff} | Final: ${squareDiff}`
   );
 
   // Return the sum of the differences
-  return diffR + diffG + diffB;
+  return totalDiff * 0xffff;
 }
 
 // Custom hook for game logic
 function useGame() {
   const [colorCode, setColorCode] = useState<string>(getRandomColor());
   const [score, setScore] = useState<number>(0);
-  const [health, setHealth] = useState<number>(0xff);
+  const [health, setHealth] = useState<number>(0xffffff);
 
   function getRandomColor(): string {
-    return Math.floor(Math.random() * 16777215)
+    return Math.floor(Math.random() * 0xffffff)
       .toString(16)
       .toUpperCase();
   }
@@ -74,15 +74,16 @@ function ColorInputForm({ onSubmit }: ColorInputFormProps) {
 
   const handleSubmit = (event: h.JSX.TargetedEvent<HTMLFormElement, Event>) => {
     event.preventDefault();
-    
+
     const form = event.currentTarget as HTMLFormElement & {
       elements: { colorInput: HTMLInputElement };
     };
-    const guess = form.elements.colorInput.value;
+    const guess = form.elements.colorInput.value.padStart(6, '0');
+    console.log('Input:', guess);
 
     onSubmit(guess);
 
-    form.elements.colorInput.value = '';
+    form.elements.colorInput.value = '7f7f7f';
   };
 
   return (
@@ -103,15 +104,23 @@ function ColorInputForm({ onSubmit }: ColorInputFormProps) {
 
 // Main App component
 export function App() {
-  const { colorCode, health, handleGuess } = useGame();
+  const { colorCode, health, score, handleGuess } = useGame();
 
   console.log('Rendering App. Color code:', colorCode);
 
+  const scoreText = '★' + score.toString(16).toUpperCase();
+
   return (
     <div class='game-container'>
-      <h1>♥{health.toString(16).toUpperCase()}</h1>
-      <div class='color-square' style={{ backgroundColor: `#${colorCode}` }}></div>
+      <h1>{score > 0 ? scoreText : '•'}</h1>
+      <div
+        class='color-square'
+        style={{ backgroundColor: `#${colorCode}` }}
+        title={`Color code: #${colorCode}`}
+        default={true}
+      ></div>
       <ColorInputForm onSubmit={handleGuess} />
+      <h2>♥{health.toString(16).toUpperCase()}</h2>
     </div>
   );
 }
