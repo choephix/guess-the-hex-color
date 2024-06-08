@@ -91,7 +91,7 @@ button:focus-visible {
 .input-zone {
   display: flex;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 2em;
 
   background-color: #101010;
   border-radius: 20px;
@@ -131,12 +131,14 @@ button:focus-visible {
   align-items: center;
   justify-content: center;
   display: flex;
+  height: 100%;
   /* font-family: monospace; */
 }
 
 .hp-container {
   /* Container properties */
   width: 100%;
+  height: 32px;
   background-color: #3a0808;
   border-radius: 10px;
   overflow: hidden;
@@ -149,6 +151,12 @@ button:focus-visible {
   height: 100%;
   background-color: rgb(15, 150, 75);
   transition: width 0.3s ease-in-out;
+}
+
+hr {
+  width: 100%;
+  margin: 2em 0;
+  opacity: 0.1;
 }
 
 .hidden {
