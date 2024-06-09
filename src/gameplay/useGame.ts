@@ -95,6 +95,7 @@ export function useGame() {
     setScore(0);
     setHealth(0xffffff);
     setIsGameOver(false);
+    clearGuessHistory();
   }, []);
 
   return { colorCode, score, health, guessHistory, isGameOver, handleGuess, resetGame };

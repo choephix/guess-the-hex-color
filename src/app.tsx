@@ -1,7 +1,6 @@
 import { FunctionComponent, h } from 'preact';
-import { useCallback, useState } from 'preact/hooks';
 
-import { Ticker, Tick } from 'react-flip-ticker';
+import { Tick, Ticker } from 'react-flip-ticker';
 
 import './app.css';
 import { useGame } from './gameplay/useGame';
@@ -54,11 +53,11 @@ export const ColorInputForm: FunctionComponent<ColorInputFormProps> = ({ onSubmi
   );
 };
 
-interface GameOverProps {
-  resetGame: () => void;
-}
+interface GameOverProps {}
 
-export const GameOver: FunctionComponent<GameOverProps> = ({ resetGame }) => {
+export const GameOver: FunctionComponent<GameOverProps> = ({}) => {
+  const { resetGame } = useGame();
+
   return (
     <div>
       <h1>Game Over</h1>
@@ -67,17 +66,10 @@ export const GameOver: FunctionComponent<GameOverProps> = ({ resetGame }) => {
   );
 };
 
-interface GameProps {
-  onGameOver: () => void;
-}
+interface GameProps {}
 
-export const Game: FunctionComponent<GameProps> = ({ onGameOver }) => {
-  const { colorCode, health, score, isGameOver, handleGuess } = useGame();
-
-  if (isGameOver) {
-    onGameOver();
-    return null;
-  }
+export const Game: FunctionComponent<GameProps> = ({}) => {
+  const { colorCode, health, score, handleGuess } = useGame();
 
   return (
     <>
@@ -92,20 +84,11 @@ export const Game: FunctionComponent<GameProps> = ({ onGameOver }) => {
 };
 
 export const App: FunctionComponent = () => {
-  const [gameOver, setGameOver] = useState(false);
-  const { guessHistory } = useGame();
-
-  const handleGameOver = () => {
-    setGameOver(true);
-  };
-
-  const resetGame = () => {
-    setGameOver(false);
-  };
+  const { guessHistory, isGameOver } = useGame();
 
   return (
     <div class='game-container'>
-      {gameOver ? <GameOver resetGame={resetGame} /> : <Game onGameOver={handleGameOver} />}
+      {isGameOver ? <GameOver /> : <Game />}
       <hr />
       <GuessHistory history={guessHistory} />
       <div style='height: 20dvh'></div>
