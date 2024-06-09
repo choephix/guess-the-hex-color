@@ -72,7 +72,7 @@ interface GameProps {
 }
 
 export const Game: FunctionComponent<GameProps> = ({ onGameOver }) => {
-  const { colorCode, health, score, guessHistory, isGameOver, handleGuess } = useGame();
+  const { colorCode, health, score, isGameOver, handleGuess } = useGame();
 
   if (isGameOver) {
     onGameOver();
@@ -87,14 +87,13 @@ export const Game: FunctionComponent<GameProps> = ({ onGameOver }) => {
         <div class='color-square' style={{ backgroundColor: `#${colorCode}` }}></div>
         <ColorInputForm onSubmit={handleGuess} />
       </div>
-      <hr />
-      <GuessHistory history={guessHistory} />
     </>
   );
 };
 
 export const App: FunctionComponent = () => {
   const [gameOver, setGameOver] = useState(false);
+  const { guessHistory } = useGame();
 
   const handleGameOver = () => {
     setGameOver(true);
@@ -107,6 +106,8 @@ export const App: FunctionComponent = () => {
   return (
     <div class='game-container'>
       {gameOver ? <GameOver resetGame={resetGame} /> : <Game onGameOver={handleGameOver} />}
+      <hr />
+      <GuessHistory history={guessHistory} />
       <div style='height: 20dvh'></div>
     </div>
   );
@@ -165,7 +166,6 @@ const GuessHistory: FunctionComponent<{ history: GuessHistoryEntry[] }> = ({ his
     </div>
   );
 };
-
 
 interface DamageDisplayProps {
   value: number;
