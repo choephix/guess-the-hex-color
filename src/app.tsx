@@ -155,13 +155,13 @@ interface DamageDisplayProps {
 }
 
 const DamageDisplay: FunctionComponent<DamageDisplayProps> = ({ value }) => {
-  const redPart = value.toString(16).toUpperCase();
-  const bluePart = '0'.repeat(6 - redPart.length);
+  const dangerPart = value.toString(16).toUpperCase();
+  const perfectPart = '0'.repeat(6 - dangerPart.length);
 
   return (
     <span>
-      <span style={{ color: 'red' }}>{redPart}</span>
-      <span style={{ color: 'green' }}>{bluePart}</span>
+      <span style={{ color: 'green' }}>{perfectPart}</span>
+      <span style={{ color: 'red' }}>{dangerPart}</span>
     </span>
   );
 };
