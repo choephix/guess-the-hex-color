@@ -59,7 +59,7 @@ export const GameOver: FunctionComponent<GameOverProps> = ({}) => {
   const { resetGame } = useGame();
 
   return (
-    <div>
+    <div class='game-over'>
       <h1>Game Over</h1>
       <button onClick={resetGame}>New Game</button>
     </div>
