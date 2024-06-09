@@ -6,7 +6,7 @@
 
 #app {
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
   overflow: auto
 }
 
@@ -35,20 +35,20 @@
 }
 
 .game {
-  max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
   text-align: center;
   
   display: flex;
   place-items: center;
   flex-direction: column;
+
   height: 60vh;
+  max-width: 100%;
 }
 
 .color-square {
-  width: 50vmin;
-  height: 50vmin;
+  width: 60vmin;
+  height: 60vmin;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -65,6 +65,9 @@
   background-color: #101010;
   border-radius: 20px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+
+  width: 100%;
+  font-size: 1.75vmin;
 }
 
 .hashtag {
@@ -80,8 +83,9 @@
   border: none;
   padding: 10px 20px 10px 1px;
   border-radius: 20px 0 0 20px;
-  width: 200px;
   font-size: 1.5em;
+  width: 0;
+  flex-grow: 1;
 }
 .color-input:focus {
   outline: none;
