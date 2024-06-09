@@ -4,104 +4,11 @@ import { useCallback, useState } from 'preact/hooks';
 import { Ticker, Tick } from 'react-flip-ticker';
 
 import './app.css';
+import { useGame } from './gameplay/useGame';
 
 const maxHealth = 0xffffff;
 
 const defaultInput = '808080';
-
-function calculateColorDifference(color1: string, color2: string) {
-  // Convert hex color code to RGB
-  const hexToRgb = (hex: string) => {
-    const r = parseInt(hex.slice(0, 2), 16);
-    const g = parseInt(hex.slice(2, 4), 16);
-    const b = parseInt(hex.slice(4, 6), 16);
-    return { r, g, b };
-  };
-
-  const rgb1 = hexToRgb(color1);
-  const rgb2 = hexToRgb(color2);
-
-  // Calculate the difference between each channel
-  const diffR = rgb1.r - rgb2.r;
-  const diffG = rgb1.g - rgb2.g;
-  const diffB = rgb1.b - rgb2.b;
-
-  return [diffR, diffG, diffB] as const;
-}
-
-function calculateDamage(diffR: number, diffG: number, diffB: number) {
-  const sumDiff = Math.abs(diffR) + Math.abs(diffG) + Math.abs(diffB);
-  const mulDiff = Math.abs(diffR * diffG * diffB);
-  const sqrDiff = ~~Math.sqrt(diffR ** 2 + diffG ** 2 + diffB ** 2);
-
-  console.log(`
-    RGB diff: ${diffR}, ${diffG}, ${diffB}
-    Total diff: ${sumDiff.toString(16).toUpperCase()}
-    Square diff: ${sqrDiff.toString(16).toUpperCase()}
-    Mul diff: ${mulDiff.toString(16).toUpperCase()}
-    `);
-
-  return sumDiff * (0xffff / 3);
-  // return mulDiff * 16;
-}
-
-// Custom hook for game logic
-function useGame() {
-  const [guessHistory, setGuessHistory] = useState<GuessHistoryEntry[]>([]);
-
-  const [colorCode, setColorCode] = useState<string>(getRandomColor());
-  const [score, setScore] = useState<number>(0);
-  const [health, setHealth] = useState<number>(maxHealth);
-  const [isGameOver, setIsGameOver] = useState<boolean>(false);
-
-  function getRandomColor(): string {
-    return Math.floor(Math.random() * 0xffffff)
-      .toString(16)
-      .toUpperCase();
-  }
-
-  const handleGuess = useCallback(
-    (guess: string) => {
-      if (isGameOver) return;
-
-      const diffs = calculateColorDifference(guess, colorCode);
-      const damage = calculateDamage(...diffs);
-      const newHealth = health - damage;
-      setHealth(newHealth);
-
-      // Add this block
-      setGuessHistory(prevHistory => [
-        {
-          colorToGuess: '' + colorCode,
-          userGuess: guess,
-          rgbDifference: { r: diffs[0], g: diffs[1], b: diffs[2] },
-          damage,
-        },
-        ...prevHistory,
-      ]);
-
-      if (newHealth <= 0) {
-        setIsGameOver(true);
-      } else {
-        setScore(score + 1);
-      }
-
-      console.log({ guess, colorCode, diffs, damage: damage.toString(16), newHealth, isGameOver });
-
-      setColorCode(getRandomColor());
-    },
-    [colorCode, score, health || 0, isGameOver]
-  );
-
-  const resetGame = useCallback(() => {
-    setColorCode(getRandomColor());
-    setScore(0);
-    setHealth(0xffffff);
-    setIsGameOver(false);
-  }, []);
-
-  return { colorCode, score, health, guessHistory, isGameOver, handleGuess, resetGame };
-}
 
 interface ColorInputFormProps {
   onSubmit: (guess: string) => void;
