@@ -48,8 +48,12 @@ export const App: FunctionComponent = () => {
   return (
     <div class='game-container'>
       {isGameOver ? <GameOver /> : <Game />}
-      <hr />
-      <GuessHistory history={guessHistory} />
+      {guessHistory.length <= 0 ? null : (
+        <>
+          <hr />
+          <GuessHistory history={guessHistory} />
+        </>
+      )}
       <div style='height: 20dvh'></div>
     </div>
   );
