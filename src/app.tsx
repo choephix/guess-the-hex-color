@@ -1,7 +1,8 @@
-import { FunctionComponent, h } from 'preact';
+import { FunctionComponent } from 'preact';
 
 import { useEffect } from 'preact/hooks';
 
+import { ColorInputForm } from './components/ColorInputForm';
 import { GuessHistory } from './components/GuessHistory';
 import { HealthBar } from './components/HealthBar';
 import { gameConfig2, useGame } from './gameplay/useGame';
@@ -10,51 +11,7 @@ import './app.css';
 
 export const maxHealth = 0xffffff;
 
-const defaultInput = '808080';
-
-interface ColorInputFormProps {
-  onSubmit: (guess: string) => void;
-}
-
-// Component for the color input form
-export const ColorInputForm: FunctionComponent<ColorInputFormProps> = ({ onSubmit }) => {
-  const handleInputChange = (event: h.JSX.TargetedEvent<HTMLInputElement, Event>) => {
-    let value = event.currentTarget.value.toUpperCase();
-    value = value.slice(0, 6);
-    value = value.replace(/[^A-Fa-f0-9]/g, '');
-    event.currentTarget.value = value;
-  };
-
-  const handleSubmit = (event: h.JSX.TargetedEvent<HTMLFormElement, Event>) => {
-    event.preventDefault();
-
-    const form = event.currentTarget as HTMLFormElement & {
-      elements: { colorInput: HTMLInputElement };
-    };
-    const guess = form.elements.colorInput.value.padStart(6, '0');
-
-    onSubmit(guess);
-
-    form.elements.colorInput.value = defaultInput;
-  };
-
-  return (
-    <form onSubmit={handleSubmit} class='input-zone'>
-      <div class='hashtag'>#</div>
-      <input
-        type='text'
-        name='colorInput'
-        class='color-input'
-        placeholder='Guess the color'
-        onInput={handleInputChange}
-        defaultValue={defaultInput}
-      />
-      <button type='submit' class='submit-button'>
-        Submit
-      </button>
-    </form>
-  );
-};
+export const defaultInput = '808080';
 
 interface GameOverProps {}
 
