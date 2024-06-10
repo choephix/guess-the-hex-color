@@ -21,7 +21,7 @@ export const gameConfig1 = {
   },
 };
 
-export const gameConfig2: GameConfig = {
+export const gameConfig0: GameConfig = {
   maxHealth: 0xffffff,
   inputTemplate: 'RRGGBB',
   inputDefault: '',

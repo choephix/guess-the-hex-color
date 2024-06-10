@@ -3,19 +3,24 @@ import { FunctionComponent } from 'preact';
 import { useEffect } from 'preact/hooks';
 
 import { ColorInputForm } from './components/ColorInputForm';
+import { ColorPreview } from './components/ColorPreview';
 import { GuessHistory } from './components/GuessHistory';
 import { HealthBar } from './components/HealthBar';
-import { gameConfig2, useGame } from './gameplay/useGame';
+import { ScoreDisplay } from './components/ScoreDisplay';
+
+import { gameConfig0, gameConfig1, useGame } from './gameplay/useGame';
 
 import './app.css';
-import { ColorPreview } from './components/ColorPreview';
-import { ScoreDisplay } from './components/ScoreDisplay';
+
+//// if url params has "fff" set at all, use game config 1
+const gameConfig =
+  new URLSearchParams(window.location.search).get('fff') !== null ? gameConfig1 : gameConfig0;
 
 export const GameOver: FunctionComponent = () => {
   const { resetGame } = useGame();
 
   const startNewGame = () => {
-    resetGame(gameConfig2);
+    resetGame(gameConfig);
   };
 
   return (
@@ -45,7 +50,7 @@ export const Game: FunctionComponent = () => {
 export const App: FunctionComponent = () => {
   const { guessHistory, isGameOver, resetGame } = useGame();
 
-  useEffect(() => resetGame(gameConfig2), []);
+  useEffect(() => resetGame(gameConfig), []);
 
   return (
     <div class='game-container'>
