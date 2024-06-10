@@ -3,7 +3,8 @@ import { FunctionComponent, h } from 'preact';
 import { Tick, Ticker } from 'react-flip-ticker';
 
 import './app.css';
-import { useGame } from './gameplay/useGame';
+import { gameConfig2, useGame } from './gameplay/useGame';
+import { useEffect } from 'preact/hooks';
 
 const maxHealth = 0xffffff;
 
@@ -58,10 +59,14 @@ interface GameOverProps {}
 export const GameOver: FunctionComponent<GameOverProps> = ({}) => {
   const { resetGame } = useGame();
 
+  const startNewGame = () => {
+    resetGame(gameConfig2);
+  };
+
   return (
     <div class='game-over'>
       <h1>Game Over</h1>
-      <button onClick={resetGame}>New Game</button>
+      <button onClick={startNewGame}>New Game</button>
     </div>
   );
 };
@@ -84,7 +89,9 @@ export const Game: FunctionComponent<GameProps> = ({}) => {
 };
 
 export const App: FunctionComponent = () => {
-  const { guessHistory, isGameOver } = useGame();
+  const { guessHistory, isGameOver, resetGame } = useGame();
+
+  useEffect(() => resetGame(gameConfig2), []);
 
   return (
     <div class='game-container'>

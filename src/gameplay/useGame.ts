@@ -1,9 +1,55 @@
-import { create } from 'zustand';
 import { useCallback } from 'preact/hooks';
+import { create } from 'zustand';
 
-const maxHealth = 0xffffff;
+type GameConfig = Readonly<typeof gameConfig1>;
+
+export const gameConfig1 = {
+  maxHealth: 0xf,
+  inputTemplate: 'RGB' as 'RGB' | 'RRGGBB',
+  makeRandomColor() {
+    return Math.floor(Math.random() * 0xfff)
+      .toString(16)
+      .toUpperCase()
+      .padStart(3, '0');
+  },
+  calculateDamage(diffR: number, diffG: number, diffB: number) {
+    const sumDiff = Math.abs(diffR) + Math.abs(diffG) + Math.abs(diffB);
+    const damage = sumDiff / 0xf;
+    console.log({ sumDiff, damage });
+    return damage;
+  },
+};
+
+export const gameConfig2: GameConfig = {
+  maxHealth: 0xffffff,
+  inputTemplate: 'RRGGBB',
+  makeRandomColor() {
+    return Math.floor(Math.random() * 0xffffff)
+      .toString(16)
+      .toUpperCase()
+      .padStart(6, '0');
+  },
+  calculateDamage(diffR: number, diffG: number, diffB: number) {
+    const sumDiff = Math.abs(diffR) + Math.abs(diffG) + Math.abs(diffB);
+    const mulDiff = Math.abs(diffR * diffG * diffB);
+    const sqrDiff = ~~Math.sqrt(diffR ** 2 + diffG ** 2 + diffB ** 2);
+
+    console.log(`
+    RGB diff: ${diffR}, ${diffG}, ${diffB}
+    Total diff: ${sumDiff.toString(16).toUpperCase()}
+    Square diff: ${sqrDiff.toString(16).toUpperCase()}
+    Mul diff: ${mulDiff.toString(16).toUpperCase()}
+    `);
+
+    return sumDiff * (0xffff / 3);
+    // return mulDiff * 16;
+  },
+};
 
 type State = {
+  cfg: GameConfig;
+  setCfg: (cfg: GameConfig) => void;
+
   guessHistory: GuessHistoryEntry[];
   colorCode: string;
   score: number;
@@ -18,10 +64,13 @@ type State = {
 };
 
 export const useGameStateStore = create<State>(set => ({
+  cfg: gameConfig1,
+  setCfg: cfg => set({ cfg }),
+
   guessHistory: [],
-  colorCode: getRandomColor(),
+  colorCode: '',
   score: 0,
-  health: maxHealth,
+  health: 0,
   isGameOver: false,
   addGuessHistoryEntry: entry => set(state => ({ guessHistory: [entry, ...state.guessHistory] })),
   clearGuessHistory: () => set({ guessHistory: [] }),
@@ -38,12 +87,6 @@ interface GuessHistoryEntry {
   damage: number;
 }
 
-function getRandomColor(): string {
-  return Math.floor(Math.random() * 0xffffff)
-    .toString(16)
-    .toUpperCase();
-}
-
 // Custom hook for game logic
 export function useGame() {
   const {
@@ -58,6 +101,8 @@ export function useGame() {
     setScore,
     setHealth,
     setIsGameOver,
+    cfg,
+    setCfg,
   } = useGameStateStore();
 
   const handleGuess = useCallback(
@@ -85,18 +130,22 @@ export function useGame() {
 
       console.log({ guess, colorCode, diffs, damage: damage.toString(16), newHealth, isGameOver });
 
-      setColorCode(getRandomColor());
+      setColorCode(cfg.makeRandomColor());
     },
-    [colorCode, score, health || 0, isGameOver]
+    [colorCode, score, health || 0, isGameOver, cfg]
   );
 
-  const resetGame = useCallback(() => {
-    setColorCode(getRandomColor());
-    setScore(0);
-    setHealth(0xffffff);
-    setIsGameOver(false);
-    clearGuessHistory();
-  }, []);
+  const resetGame = useCallback(
+    (cfg: GameConfig) => {
+      setCfg(cfg);
+      setColorCode(cfg.makeRandomColor());
+      setScore(0);
+      setHealth(cfg.maxHealth);
+      setIsGameOver(false);
+      clearGuessHistory();
+    },
+    [cfg]
+  );
 
   return { colorCode, score, health, guessHistory, isGameOver, handleGuess, resetGame };
 }
