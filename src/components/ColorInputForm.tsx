@@ -22,7 +22,25 @@ export const ColorInputForm: FunctionComponent<ColorInputFormProps> = ({
     const form = event.currentTarget as HTMLFormElement & {
       elements: { colorInput: HTMLInputElement };
     };
-    const guess = form.elements.colorInput.value.padStart(6, '0');
+
+    let guess = form.elements.colorInput.value;
+    if (guess.length < 3) {
+      //// pad with zeros e.g. ab -> 0ab
+      guess = guess.padStart(3, '0');
+    }
+
+    if (guess.length === 3) {
+      //// double the chars e.g. abc -> aabbcc
+      guess = guess
+        .split('')
+        .map(c => c + c)
+        .join('');
+    }
+
+    if (guess.length < 6) {
+      //// pad with zeros e.g. abc -> 00abcd
+      guess = guess.padStart(6, '0');
+    }
 
     onSubmit(guess);
 
