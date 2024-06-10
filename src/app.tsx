@@ -1,13 +1,14 @@
 import { FunctionComponent, h } from 'preact';
 
-import { Tick, Ticker } from 'react-flip-ticker';
-import { gameConfig2, useGame } from './gameplay/useGame';
 import { useEffect } from 'preact/hooks';
 
-import './app.css';
 import { GuessHistory } from './components/GuessHistory';
+import { HealthBar } from './components/HealthBar';
+import { gameConfig2, useGame } from './gameplay/useGame';
 
-const maxHealth = 0xffffff;
+import './app.css';
+
+export const maxHealth = 0xffffff;
 
 const defaultInput = '808080';
 
@@ -81,7 +82,7 @@ export const Game: FunctionComponent<GameProps> = ({}) => {
     <>
       <div class='game'>
         <h1 className={score > 0 ? '' : 'hidden'}>{'★' + score}</h1>
-        <HPTicker value={health} />
+        <HealthBar value={health} />
         <div class='color-square' style={{ backgroundColor: `#${colorCode}` }}></div>
         <ColorInputForm onSubmit={handleGuess} />
       </div>
@@ -100,28 +101,6 @@ export const App: FunctionComponent = () => {
       <hr />
       <GuessHistory history={guessHistory} />
       <div style='height: 20dvh'></div>
-    </div>
-  );
-};
-
-const HPTicker: FunctionComponent<{ value: number }> = ({ value }) => {
-  const HEX_DIGITS = '0123456789ABCDEFNa-/'.split('');
-  const valueHex = isNaN(value) ? 'NaN' : value.toString(16).toUpperCase().padStart(6, '0');
-  const hpPercentage = isNaN(value) ? 0 : (100 * value) / maxHealth; // Ensure value is a number
-
-  return (
-    <div class='hp-container'>
-      <div class='hp-bar' style={{ width: `${hpPercentage}%` }}></div>
-      <div class='hp-ticker'>
-        <Ticker textClassName='text'>
-          ♥
-          {valueHex.split('').map((char, index) => (
-            <Tick key={'d' + index} rotateItems={HEX_DIGITS}>
-              {char}
-            </Tick>
-          ))}
-        </Ticker>
-      </div>
     </div>
   );
 };
