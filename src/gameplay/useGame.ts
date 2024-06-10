@@ -6,7 +6,7 @@ type GameConfig = Readonly<typeof gameConfig1>;
 export const gameConfig1 = {
   maxHealth: 0xf,
   inputTemplate: 'RGB' as 'RGB' | 'RRGGBB',
-  inputDefault: '888',
+  inputDefault: '',
   makeRandomColor() {
     return Math.floor(Math.random() * 0xfff)
       .toString(16)
@@ -24,7 +24,7 @@ export const gameConfig1 = {
 export const gameConfig2: GameConfig = {
   maxHealth: 0xffffff,
   inputTemplate: 'RRGGBB',
-  inputDefault: '808080',
+  inputDefault: '',
   makeRandomColor() {
     return Math.floor(Math.random() * 0xffffff)
       .toString(16)
