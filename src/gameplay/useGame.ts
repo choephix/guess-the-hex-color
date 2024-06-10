@@ -1,10 +1,11 @@
 import { useCallback } from 'preact/hooks';
 import { create } from 'zustand';
+import { padColorCode } from '../util/padColorCode';
 
 type GameConfig = Readonly<typeof gameConfig1>;
 
 export const gameConfig1 = {
-  maxHealth: 0xf,
+  maxHealth: 3 * 0xf,
   inputTemplate: 'RGB' as 'RGB' | 'RRGGBB',
   inputDefault: '',
   makeRandomColor() {
@@ -17,7 +18,7 @@ export const gameConfig1 = {
     const sumDiff = Math.abs(diffR) + Math.abs(diffG) + Math.abs(diffB);
     const damage = sumDiff / 0xf;
     console.log({ sumDiff, damage });
-    return damage;
+    return ~~damage;
   },
 };
 
@@ -112,7 +113,7 @@ export function useGame() {
       if (isGameOver) return;
 
       const diffs = calculateColorDifference(guess, colorCode);
-      const damage = calculateDamage(...diffs);
+      const damage = cfg.calculateDamage(...diffs);
       const newHealth = health - damage;
       setHealth(newHealth);
 
@@ -162,6 +163,9 @@ export function useGame() {
 }
 
 function calculateColorDifference(color1: string, color2: string) {
+  color1 = padColorCode(color1);
+  color2 = padColorCode(color2);
+
   // Convert hex color code to RGB
   const hexToRgb = (hex: string) => {
     const r = parseInt(hex.slice(0, 2), 16);
@@ -174,25 +178,9 @@ function calculateColorDifference(color1: string, color2: string) {
   const rgb2 = hexToRgb(color2);
 
   // Calculate the difference between each channel
-  const diffR = rgb1.r - rgb2.r;
-  const diffG = rgb1.g - rgb2.g;
-  const diffB = rgb1.b - rgb2.b;
+  const diffR = rgb1.r - rgb2.r - 1;
+  const diffG = rgb1.g - rgb2.g - 1;
+  const diffB = rgb1.b - rgb2.b - 1;
 
   return [diffR, diffG, diffB] as const;
-}
-
-function calculateDamage(diffR: number, diffG: number, diffB: number) {
-  const sumDiff = Math.abs(diffR) + Math.abs(diffG) + Math.abs(diffB);
-  const mulDiff = Math.abs(diffR * diffG * diffB);
-  const sqrDiff = ~~Math.sqrt(diffR ** 2 + diffG ** 2 + diffB ** 2);
-
-  console.log(`
-    RGB diff: ${diffR}, ${diffG}, ${diffB}
-    Total diff: ${sumDiff.toString(16).toUpperCase()}
-    Square diff: ${sqrDiff.toString(16).toUpperCase()}
-    Mul diff: ${mulDiff.toString(16).toUpperCase()}
-    `);
-
-  return sumDiff * (0xffff / 3);
-  // return mulDiff * 16;
 }
