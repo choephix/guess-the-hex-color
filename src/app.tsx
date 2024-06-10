@@ -8,6 +8,8 @@ import { HealthBar } from './components/HealthBar';
 import { gameConfig2, useGame } from './gameplay/useGame';
 
 import './app.css';
+import { ColorPreview } from './components/ColorPreview';
+import { ScoreDisplay } from './components/ScoreDisplay';
 
 export const GameOver: FunctionComponent = () => {
   const { resetGame } = useGame();
@@ -31,9 +33,9 @@ export const Game: FunctionComponent = () => {
   return (
     <>
       <div class='game'>
-        <h1 className={score > 0 ? '' : 'hidden'}>{'★' + score}</h1>
+        <ScoreDisplay score={score} />
         <HealthBar value={health} valueMax={maxHealth} />
-        <div class='color-square' style={{ backgroundColor: `#${colorCode}` }}></div>
+        <ColorPreview colorCode={colorCode} />
         <ColorInputForm defaultInput={inputDefault} onSubmit={handleGuess} />
       </div>
     </>
