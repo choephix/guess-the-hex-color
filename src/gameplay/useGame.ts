@@ -6,6 +6,7 @@ type GameConfig = Readonly<typeof gameConfig1>;
 export const gameConfig1 = {
   maxHealth: 0xf,
   inputTemplate: 'RGB' as 'RGB' | 'RRGGBB',
+  inputDefault: '888',
   makeRandomColor() {
     return Math.floor(Math.random() * 0xfff)
       .toString(16)
@@ -23,6 +24,7 @@ export const gameConfig1 = {
 export const gameConfig2: GameConfig = {
   maxHealth: 0xffffff,
   inputTemplate: 'RRGGBB',
+  inputDefault: '808080',
   makeRandomColor() {
     return Math.floor(Math.random() * 0xffffff)
       .toString(16)
@@ -147,7 +149,16 @@ export function useGame() {
     [cfg]
   );
 
-  return { colorCode, score, health, guessHistory, isGameOver, handleGuess, resetGame };
+  return {
+    colorCode,
+    score,
+    health,
+    guessHistory,
+    isGameOver,
+    handleGuess,
+    resetGame,
+    getCfg: () => cfg,
+  };
 }
 
 function calculateColorDifference(color1: string, color2: string) {

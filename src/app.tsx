@@ -9,13 +9,7 @@ import { gameConfig2, useGame } from './gameplay/useGame';
 
 import './app.css';
 
-export const maxHealth = 0xffffff;
-
-export const defaultInput = '808080';
-
-interface GameOverProps {}
-
-export const GameOver: FunctionComponent<GameOverProps> = ({}) => {
+export const GameOver: FunctionComponent = () => {
   const { resetGame } = useGame();
 
   const startNewGame = () => {
@@ -30,18 +24,17 @@ export const GameOver: FunctionComponent<GameOverProps> = ({}) => {
   );
 };
 
-interface GameProps {}
-
-export const Game: FunctionComponent<GameProps> = ({}) => {
-  const { colorCode, health, score, handleGuess } = useGame();
+export const Game: FunctionComponent = () => {
+  const { colorCode, health, score, handleGuess, getCfg } = useGame();
+  const { maxHealth, inputDefault } = getCfg();
 
   return (
     <>
       <div class='game'>
         <h1 className={score > 0 ? '' : 'hidden'}>{'★' + score}</h1>
-        <HealthBar value={health} />
+        <HealthBar value={health} valueMax={maxHealth} />
         <div class='color-square' style={{ backgroundColor: `#${colorCode}` }}></div>
-        <ColorInputForm onSubmit={handleGuess} />
+        <ColorInputForm defaultInput={inputDefault} onSubmit={handleGuess} />
       </div>
     </>
   );
